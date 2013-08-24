@@ -1,0 +1,21 @@
+{
+	"manifest_version" : 2,
+	"name" : "HNES",
+	"description" : "HackerNews Enhancement Suite - Make HN better",
+	"version" : "1",
+	"permissions" : [
+		"https://news.ycombinator.com/"
+	],
+	"content_scripts" : [
+		{
+			"matches" : ["https://news.ycombinator.com/"],
+			"css" : ["style.css"],
+			"js" : ["jquery-1.10.1.min.js", "hnes_home.js"]
+		},
+		{
+			"matches" : ["https://news.ycombinator.com/item*"],
+			"css" : ["style.css"],
+			"js" : ["jquery-1.10.1.min.js", "hnes_item.js"]
+		}
+  	]
+}
