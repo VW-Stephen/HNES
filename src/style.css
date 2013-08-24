@@ -1,0 +1,37 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+.commentWrapper {
+	background: #fff;
+	border: 1px dashed #ccc;
+	padding: 3px 5px;
+	margin: 5px 0 0 20px;
+}
+.commentBody {
+	display: block;
+	margin: 5px 0;
+}
+.commentHeader {
+	display: inline;
+}
+.commentHeader a {
+	margin-right: 3px;
+}
+.collapse {
+ 	border: 1px solid #ccc;
+ 	cursor: pointer;
+ 	display: inline-block;
+ 	padding: 1px 5px;
+ 	margin-right: 5px;
+}
+.odd {
+	background: #ffe;
+}
+.userPanel {
+	background: #fff;
+	border: 1px solid #ccc;
+	display: inline-block;
+	padding: 5px 8px;
+	position: absolute;
+}
