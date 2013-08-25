@@ -3,10 +3,10 @@
 	padding: 0;
 }
 .commentWrapper {
-	background: #fff;
+	background: #f7f7f7;
 	border: 1px dashed #ccc;
 	padding: 3px 5px;
-	margin: 5px 0 0 20px;
+	margin: 5px 5px 0 20px;
 }
 .commentBody {
 	display: block;
@@ -26,12 +26,34 @@
  	margin-right: 5px;
 }
 .odd {
-	background: #ffe;
+	background: #f0f0f0;
+}
+.tagLink {
+	color: #000;
+	cursor: pointer;
+}
+.tagSave {
+	border: 1px solid #ccc;
+	color: #333;
+	cursor: pointer;
+	padding: 3px 5px;
 }
 .userPanel {
-	background: #fff;
+	background: #f7f7f7;
+	color: #000;
 	border: 1px solid #ccc;
-	display: inline-block;
+	display: none;
+	margin-top: -10px;
 	padding: 5px 8px;
 	position: absolute;
+}
+.userPanel input {
+	padding: 3px;
+}
+.userTag {
+	background: #fdd;
+	border: 1px solid #644;
+	color: #644;
+	margin-left: 5px;
+	padding: 1px 3px;
 }

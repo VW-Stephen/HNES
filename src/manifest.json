@@ -4,7 +4,8 @@
 	"description" : "HackerNews Enhancement Suite - Make HN better",
 	"version" : "1",
 	"permissions" : [
-		"https://news.ycombinator.com/"
+		"https://news.ycombinator.com/",
+		"storage"
 	],
 	"content_scripts" : [
 		{

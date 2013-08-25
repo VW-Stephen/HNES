@@ -33,6 +33,10 @@ $(document).ready(function() {
 				if(newComments[j].depth < myDepth) {
 					// The depth of the item we just found is less than ours. So that's our parent!
 					newComments[j].children.push(newComments[i]);
+
+					// If the paren't isn't odd, then we are
+					if(!newComments[j].odd)
+						newComments[i].odd = true;
 					break;
 				}
 			}
@@ -48,7 +52,6 @@ $(document).ready(function() {
 	// Put the content on the page, plz
 	for(var i = 0; i < numComments; i++) {
 		if(newComments[i].depth == 0) {
-			console.debug("HNES - Creating root comment for # " + i);
 			createDiv(newComments[i], '#hnes_comments');
 			newComments[i] = null;
 		}
@@ -71,36 +74,56 @@ $(document).ready(function() {
 			commentBody.css({'display' : 'none'});
 			$(this).html('+');
 		}
-	})
-
-	$('.commentWrapper').filter(function(index) {
-		return index % 2 == 1;
-	}).addClass('odd');
-
-
+	});
 
 	/***************************************
 	 * Enable tagging of users
 	 ***************************************/
 
-	 // Find all user links
-	 var userLinks = $(document).find('a').filter(function() {
-	 	return $(this).attr('href').indexOf('user') == 0;
-	 });
-	 userLinks.addClass('userLink');
+	// Find all user links
+	var userLinks = $(document).find('a').filter(function() {
+		if($(this).attr('href') == null)
+			return false;
+		return $(this).attr('href').indexOf('user') == 0;
+	});
+	userLinks.addClass('userLink');
 
-	 // Register their click events
-	 $('.userLink').click(function() {
-	 	if($(this).next('.userPanel').length > 0) {
-	 		// Remove the user panel
-	 		$(this).next('.userPanel').first().remove();
-	 	}
-	 	else {
-	 		// Show the user panel
-	 		$(this).after('<div class="userPanel"><a href="' + $(this).attr('href') + '">Profile</a><br/>Tag: <input type="text" </div>');
-	 	}
-	 	return false;
-	 });
+	// Register their click events
+	$('.tagLink').click(function() {
+		if($(this).next('.userPanel').css('display') == 'none') {
+			$(this).next('.userPanel').css({'display':'inline-block'});
+		}
+		else {
+			$(this).next('.userPanel').css({'display':'none'});
+		}
+		return false;
+	});
+	console.debug("HNES - User panels created");
+
+	// For each user link, get their tag (if they have one)
+	for(var i = 0; i < userLinks.length; i++) {
+		var username = $(userLinks[i]).html();
+		var tag = "hnes." + username + ".tag";
+
+		var data = localStorage.getItem(tag);
+		if(data != null)
+			tagUser(userLinks[i], data);
+	}
+	console.debug("HNES - Registered tag callbacks");
+
+	// Register the save buttons' click event
+	$('.tagSave').click(function() {
+		// Get the user link
+		var userLink = $(this).parent().parent().find('.userLink');
+		var tag = $(this).prev('input[type=text]').val();
+
+		// Save the tag, update it on the page
+		localStorage.setItem("hnes." + userLink.html() + ".tag", tag);
+		tagUser(userLink, tag);
+
+		// Hide the panel
+		$(this).parent().css({'display':'none'});
+	});
 });
 
 // Extracts the important content from the table row and returns it as a nice object.
@@ -111,6 +134,7 @@ function extractComment(content) {
 	commentContent = $(content).find('.comment').eq(0).html();
 
 	return {
+		odd : false,
 		depth : depthContent,
 		vote : voteContent,
 		header : headerContent,
@@ -123,16 +147,36 @@ function extractComment(content) {
 // Creates the div content for the given comment, recurses into its children and does them too.
 function createDiv(comment, parent) {
 	// Create the comment div(s)
-	$(parent).append("<div class='commentWrapper'><span class='collapse'>-</span><div class='commentHeader'>" + comment.vote + comment.header + "</div><div class='commentBody'>" + comment.comment);
-	
+	var odd = comment.odd ? " odd" : "";
+	$(parent).append("<div class='commentWrapper" + odd + "'><span class='collapse'>-</span><div class='commentHeader'>" + comment.vote + comment.header +
+		" | <a class='tagLink'>tag user</a><div class='userPanel'><input type='text'/> <input type='button' class='tagSave' value='Save'/></div></div><div class='commentBody'>" + comment.comment);
+
 	// Add any children
 	var newParent = $(parent).children('.commentWrapper').last().children('.commentBody').first();
 	for(var i = 0; i < comment.children.length; i++) {
-		console.debug("HNES - # of children: " + comment.children.length);
 		$('#hnes_comments').append(createDiv(comment.children[i], newParent));
 		comment.children[i] = null;
 	}
 
 	// Close the divs, rejoice
 	$('#hnes_comments').append("</div></div>");
+}
+
+// Tags the given user link with the given tag string
+function tagUser(link, tag) {
+	// If there's already a user tag on this link, remove it
+	var existing = $(link).next('.userTag');
+	if(existing != null)
+		existing.remove();
+
+	// Set the input box's text to match the tag (for nicer editing)
+	$(link).parent().find('input[type=text]').val(tag);
+
+	// If the tag is empty, do nothing
+	if(tag == null || tag == "")
+		return;
+
+	// Otherwise, add the tag span
+	console.debug("HNES - Tagging user '" + $(link).html() + "' as '" + tag + "'");
+	$(link).after("<span class='userTag'>" + tag + "</span>");
 }
