@@ -2,6 +2,17 @@
 	margin: 0;
 	padding: 0;
 }
+code, pre {
+	max-width: 100%;
+	width: 100%;
+}
+p {
+	margin-bottom: 1em;
+}
+.font p {
+	margin-top: 1em;
+}
+
 .commentWrapper {
 	background: #f7f7f7;
 	border: 1px dashed #ccc;
@@ -27,6 +38,12 @@
 }
 .odd {
 	background: #f0f0f0;
+}
+.poster {
+	background: #f60;
+}
+.subtext .poster {
+	background: none;
 }
 .tagLink {
 	color: #000;

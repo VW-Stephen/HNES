@@ -9,14 +9,24 @@
 	],
 	"content_scripts" : [
 		{
-			"matches" : ["https://news.ycombinator.com/"],
+			"matches" : ["https://news.ycombinator.com/", "https://news.ycombinator.com/news", "https://news.ycombinator.com/x*"],
 			"css" : ["style.css"],
-			"js" : ["jquery-1.10.1.min.js", "hnes_home.js"]
+			"js" : ["jquery-1.10.1.min.js", "hnes_shared.js", "hnes_home.js"]
 		},
 		{
 			"matches" : ["https://news.ycombinator.com/item*"],
 			"css" : ["style.css"],
-			"js" : ["jquery-1.10.1.min.js", "hnes_item.js"]
+			"js" : ["jquery-1.10.1.min.js", "hnes_shared.js", "hnes_item.js"]
+		},
+		{
+			"matches" : ["https://news.ycombinator.com/user?id=*"],
+			"css" : ["style.css"],
+			"js" : ["jquery-1.10.1.min.js", "hnes_user.js"]
+		},
+		{
+			"matches" : ["https://news.ycombinator.com/reply?id=*"],
+			"css" : ["style.css"],
+			"js" : ["jquery-1.10.1.min.js", "hnes_shared.js"]
 		}
-  	]
+	]
 }

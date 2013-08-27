@@ -1,8 +1,4 @@
 $(document).ready(function() {
-	// TODO: For debugging only, remove when the time comes to... not... debug...
-	str = "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>";
-	$('head').append(str);
-
 	/***************************************
 	 * Make the comments look nicer
 	 ***************************************/
@@ -26,11 +22,12 @@ $(document).ready(function() {
 
 	// Got the nice new comments, now we iterate through them and create the nested comment structure
 	for(i = 1; i < numComments; i++) {
-		myDepth = newComments[i].depth;
+		myDepth = + newComments[i].depth;
 		if(myDepth != 0) {
 			// I'm not a root comment, so work backwards to find my parent
 			for(j = i; j >= 0; j--) {
-				if(newComments[j].depth < myDepth) {
+				theirDepth = + newComments[j].depth;
+				if(theirDepth < myDepth) {
 					// The depth of the item we just found is less than ours. So that's our parent!
 					newComments[j].children.push(newComments[i]);
 
@@ -80,14 +77,6 @@ $(document).ready(function() {
 	 * Enable tagging of users
 	 ***************************************/
 
-	// Find all user links
-	var userLinks = $(document).find('a').filter(function() {
-		if($(this).attr('href') == null)
-			return false;
-		return $(this).attr('href').indexOf('user') == 0;
-	});
-	userLinks.addClass('userLink');
-
 	// Register their click events
 	$('.tagLink').click(function() {
 		if($(this).next('.userPanel').css('display') == 'none') {
@@ -100,17 +89,6 @@ $(document).ready(function() {
 	});
 	console.debug("HNES - User panels created");
 
-	// For each user link, get their tag (if they have one)
-	for(var i = 0; i < userLinks.length; i++) {
-		var username = $(userLinks[i]).html();
-		var tag = "hnes." + username + ".tag";
-
-		var data = localStorage.getItem(tag);
-		if(data != null)
-			tagUser(userLinks[i], data);
-	}
-	console.debug("HNES - Registered tag callbacks");
-
 	// Register the save buttons' click event
 	$('.tagSave').click(function() {
 		// Get the user link
@@ -118,12 +96,21 @@ $(document).ready(function() {
 		var tag = $(this).prev('input[type=text]').val();
 
 		// Save the tag, update it on the page
-		localStorage.setItem("hnes." + userLink.html() + ".tag", tag);
+		localStorage.setItem("hnes." + userLink.text() + ".tag", tag);
 		tagUser(userLink, tag);
 
 		// Hide the panel
 		$(this).parent().css({'display':'none'});
 	});
+
+	// TODO: Highlight the OP
+
+	/**********************************************
+	 * Typographic bullshit that I can't do in CSS
+	 **********************************************/
+
+	 // Make links be underlined. For some reason they aren't. Huh.
+	 $('a').not('.userLink').css({'text-decoration':'underline'});
 });
 
 // Extracts the important content from the table row and returns it as a nice object.
@@ -131,8 +118,18 @@ function extractComment(content) {
 	depthContent = $(content).find('img').eq(0).attr('width');
 	voteContent = $(content).find('center').eq(0).html();
 	headerContent = $(content).find('.comhead').eq(0).html();
-	commentContent = $(content).find('.comment').eq(0).html();
+	
+	// Get the comment info
+	var commentSpan = $(content).find('.comment').eq(0);
+	commentContent = commentSpan.html();
 
+	// Hack around the bullshit HN generator that puts comment content OUTSIDE the comment span. Thanks guys. A+ job, all around.
+	var commentKids = commentSpan.parent().children('p');
+	if(commentKids.length > 0) {
+		for(var i = 0; i < commentKids.length; i++) {
+			commentContent += '<p>' + commentKids.eq(i).html() + '</p>';
+		}
+	}
 	return {
 		odd : false,
 		depth : depthContent,
@@ -148,35 +145,17 @@ function extractComment(content) {
 function createDiv(comment, parent) {
 	// Create the comment div(s)
 	var odd = comment.odd ? " odd" : "";
-	$(parent).append("<div class='commentWrapper" + odd + "'><span class='collapse'>-</span><div class='commentHeader'>" + comment.vote + comment.header +
-		" | <a class='tagLink'>tag user</a><div class='userPanel'><input type='text'/> <input type='button' class='tagSave' value='Save'/></div></div><div class='commentBody'>" + comment.comment);
+	var html = "<div class='commentWrapper" + odd + "'><span class='collapse'>-</span><div class='commentHeader'>" + comment.vote + comment.header +
+		" | <a class='tagLink'>tag user</a><div class='userPanel'><input type='text'/> <input type='button' class='tagSave' value='Save'/></div></div><div class='commentBody'>" + comment.comment;
 
 	// Add any children
 	var newParent = $(parent).children('.commentWrapper').last().children('.commentBody').first();
 	for(var i = 0; i < comment.children.length; i++) {
-		$('#hnes_comments').append(createDiv(comment.children[i], newParent));
+		html += createDiv(comment.children[i], newParent);
 		comment.children[i] = null;
 	}
 
 	// Close the divs, rejoice
-	$('#hnes_comments').append("</div></div>");
-}
-
-// Tags the given user link with the given tag string
-function tagUser(link, tag) {
-	// If there's already a user tag on this link, remove it
-	var existing = $(link).next('.userTag');
-	if(existing != null)
-		existing.remove();
-
-	// Set the input box's text to match the tag (for nicer editing)
-	$(link).parent().find('input[type=text]').val(tag);
-
-	// If the tag is empty, do nothing
-	if(tag == null || tag == "")
-		return;
-
-	// Otherwise, add the tag span
-	console.debug("HNES - Tagging user '" + $(link).html() + "' as '" + tag + "'");
-	$(link).after("<span class='userTag'>" + tag + "</span>");
+	html += "</div></div>";
+	$(parent).append(html);
 }
