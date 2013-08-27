@@ -49,7 +49,7 @@ $(document).ready(function() {
 	// Put the content on the page, plz
 	for(var i = 0; i < numComments; i++) {
 		if(newComments[i].depth == 0) {
-			createDiv(newComments[i], '#hnes_comments');
+			$('#hnes_comments').append(createDiv(newComments[i]));
 			newComments[i] = null;
 		}
 	}
@@ -137,25 +137,26 @@ function extractComment(content) {
 		header : headerContent,
 		comment : commentContent,
 		parent : null,
-		children : []
+		children : [],
+		html : ""
 	};
 }
 
 // Creates the div content for the given comment, recurses into its children and does them too.
-function createDiv(comment, parent) {
+function createDiv(comment) {
 	// Create the comment div(s)
 	var odd = comment.odd ? " odd" : "";
-	var html = "<div class='commentWrapper" + odd + "'><span class='collapse'>-</span><div class='commentHeader'>" + comment.vote + comment.header +
+	comment.html = "<div class='commentWrapper" + odd + "'><span class='collapse'>-</span><div class='commentHeader'>" + comment.vote + comment.header +
 		" | <a class='tagLink'>tag user</a><div class='userPanel'><input type='text'/> <input type='button' class='tagSave' value='Save'/></div></div><div class='commentBody'>" + comment.comment;
 
 	// Add any children
-	var newParent = $(parent).children('.commentWrapper').last().children('.commentBody').first();
+	//var newParent = $(parent).children('.commentWrapper').last().children('.commentBody').first();
 	for(var i = 0; i < comment.children.length; i++) {
-		html += createDiv(comment.children[i], newParent);
+		comment.html += createDiv(comment.children[i]);
 		comment.children[i] = null;
 	}
 
 	// Close the divs, rejoice
-	html += "</div></div>";
-	$(parent).append(html);
+	comment.html += "</div></div>";
+	return comment.html;
 }
