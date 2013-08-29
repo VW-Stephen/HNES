@@ -9,7 +9,14 @@
 	],
 	"content_scripts" : [
 		{
-			"matches" : ["https://news.ycombinator.com/", "https://news.ycombinator.com/news", "https://news.ycombinator.com/x*"],
+			"matches" : [
+				"https://news.ycombinator.com/",
+				"https://news.ycombinator.com/news",
+				"https://news.ycombinator.com/x*",
+				"https://news.ycombinator.com/newest",
+				"https://news.ycombinator.com/ask",
+				"https://news.ycombinator.com/jobs"
+			],
 			"css" : ["style.css"],
 			"js" : ["jquery-1.10.1.min.js", "hnes_shared.js", "hnes_home.js"]
 		},

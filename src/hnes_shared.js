@@ -1,20 +1,6 @@
 $(document).ready(function() {
-	// TODO: For debugging only, remove when the time comes to... not... debug...
-	str = "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>";
-	$('head').append(str);
-
-
-	/***************************************
-	 * Fix markup in various ways
-	 ***************************************/
-
-	 // Replace <font> tags, because what is this, 1999?
-	 $('font').each(function() {
-	 	$(this).addClass('font');
-	 })
-
-	 $('pre').css({'width':'100%', 'max-width':'100%'});
-
+	// Include jQuery in the page source as well, to make debugging easier
+	$('head').append("<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>");
 
 	/***************************************
 	 * Inject the user tags

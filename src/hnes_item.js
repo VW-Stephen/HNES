@@ -1,4 +1,7 @@
 $(document).ready(function() {
+	// Track the script runtime
+	var startDate = new Date();
+
 	/***************************************
 	 * Make the comments look nicer
 	 ***************************************/
@@ -7,10 +10,6 @@ $(document).ready(function() {
 	comments = $('table').first().find('tr').eq(3).children('td').eq(0).children('table').eq(1).children('tbody').eq(0).children('tr');
 	numComments = comments.length;
 	console.debug("HNES - # comments: " + numComments);
-
-	// If there are no comments, then we're done I guess?
-	if(numComments == 0)
-		return;
 
 	// Go get all the comments and turn em into objects
 	newComments = [];
@@ -42,9 +41,12 @@ $(document).ready(function() {
 	console.debug("HNES - Finished creating parent/child relationships");
 
 	// Get the table row that holds all the comments, and clear it out
-	commentRow = $('table').first().find('tr').eq(3).children('td').eq(0).children('table').eq(1);
-	commentRow.after('<div id="hnes_comments"></div>');
-	commentRow.remove();
+	if(numComments > 0)
+	{
+		commentRow = $('table').first().find('tr').eq(3).children('td').eq(0).children('table').eq(1);
+		commentRow.after('<div id="hnes_comments"></div>');
+		commentRow.remove();
+	}
 
 	// Put the content on the page, plz
 	for(var i = 0; i < numComments; i++) {
@@ -103,14 +105,35 @@ $(document).ready(function() {
 		$(this).parent().css({'display':'none'});
 	});
 
-	// TODO: Highlight the OP
-
 	/**********************************************
 	 * Typographic bullshit that I can't do in CSS
 	 **********************************************/
 
-	 // Make links be underlined. For some reason they aren't. Huh.
-	 $('a').not('.userLink').css({'text-decoration':'underline'});
+	// Make links be underlined. For some reason they aren't. Huh.
+	$('a').not('.userLink').css({'text-decoration':'underline'});
+
+	// Make the font colors black, where they're supposed to be
+	$('p').css({'color':'#000'});
+
+	// Replace all font tags, because what is this, 1999?
+	$('.commentHeader font').each(function() {
+		// Replace font tags in the comment header w/ spans
+		replaceFont(this, 'span');
+	});
+	$('font').each(function() {
+		// Replace the rest of the font tags (mostly in the comment bodies?) with paragraphs
+		replaceFont(this, 'p');
+	});
+
+	// Make the comment show up in black, since it's not wrapped in a paragraph tag.
+	$('table').first().find('tr').eq(3).find('td').eq(6).css({'color':'#000'});
+
+	/**********************************************
+	 * Finish up w/ the timer metrics
+	 **********************************************/
+	 var endDate = new Date();
+	 difference = endDate - startDate;
+	 console.debug("HNES - Finished in " + difference + "ms");
 });
 
 // Extracts the important content from the table row and returns it as a nice object.
@@ -130,6 +153,8 @@ function extractComment(content) {
 			commentContent += '<p>' + commentKids.eq(i).html() + '</p>';
 		}
 	}
+
+	// Cool, return a fancy new comment object
 	return {
 		odd : false,
 		depth : depthContent,
@@ -150,7 +175,6 @@ function createDiv(comment) {
 		" | <a class='tagLink'>tag user</a><div class='userPanel'><input type='text'/> <input type='button' class='tagSave' value='Save'/></div></div><div class='commentBody'>" + comment.comment;
 
 	// Add any children
-	//var newParent = $(parent).children('.commentWrapper').last().children('.commentBody').first();
 	for(var i = 0; i < comment.children.length; i++) {
 		comment.html += createDiv(comment.children[i]);
 		comment.children[i] = null;
@@ -159,4 +183,15 @@ function createDiv(comment) {
 	// Close the divs, rejoice
 	comment.html += "</div></div>";
 	return comment.html;
+}
+
+// Replaces the given font tag with the given replacement element. Retains colors, too!
+function replaceFont(fontTag, replaceWith)
+{
+	// Extract the color from the font tag
+ 	var color = $(fontTag).attr('color');
+ 	var colorHtml = color != null ? ' style="color:' + color + '"' : '';
+ 	
+ 	// Replace the font tag w/ the new one, including the color
+ 	$(fontTag).replaceWith('<' + replaceWith + colorHtml + '>' + $(fontTag).html() + '</' + replaceWith + '>');
 }
