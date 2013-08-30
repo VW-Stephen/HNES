@@ -32,7 +32,7 @@ $(document).ready(function() {
 			tagUser(userLinks[i], data);
 
 		// Flag the poster, if we can
-		if(poster != null && poster != '' && username == poster)
+		if(poster != null && poster != '' && username == poster && i != 0)
 			$(userLinks[i]).addClass('poster');
 	}
 	console.debug("HNES - Registered tag callbacks");
