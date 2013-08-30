@@ -15,9 +15,12 @@ $(document).ready(function() {
 	userLinks.addClass('userLink');
 
 	// Get the username of the poster, if we can
-	var poster = $('.subtext .userLink').eq(0);
-	if(poster != null)
+	var poster = $('table').eq(0).find('tr').eq(3).find('.userLink').eq(0);
+	if(poster != null && poster.text() != '')
+	{
 		poster = poster.text();
+		console.debug("HNES - Found poster '" + poster + "'");
+	}
 
 	// For each user link, get their tag (if they have one)
 	for(var i = 0; i < userLinks.length; i++) {
@@ -29,7 +32,7 @@ $(document).ready(function() {
 			tagUser(userLinks[i], data);
 
 		// Flag the poster, if we can
-		if(poster != null && username == poster)
+		if(poster != null && poster != '' && username == poster)
 			$(userLinks[i]).addClass('poster');
 	}
 	console.debug("HNES - Registered tag callbacks");
