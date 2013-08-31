@@ -42,6 +42,8 @@ p {
 }
 .poster {
 	background: #f60;
+	border-radius: 4px;
+	padding: 0 3px;
 }
 .subtext .poster {
 	background: none;
