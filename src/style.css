@@ -6,6 +6,10 @@ code, pre {
 	max-width: 100%;
 	width: 100%;
 }
+pre {
+	border-left: 2px solid #aaa;
+	margin-bottom: 1em;
+}
 p {
 	color: #000;
 	margin-bottom: 1em;
@@ -21,6 +25,7 @@ p {
 	margin: 5px 5px 0 20px;
 }
 .commentBody {
+	color: #000;
 	display: block;
 	margin: 5px 0;
 }
