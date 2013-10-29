@@ -82,3 +82,6 @@ p {
 	margin-left: 5px;
 	padding: 1px 3px;
 }
+.votearrow{
+	display: inline-block;
+}
